@@ -2,18 +2,18 @@ import ast
 import csv
 
 from zkPySyft.core.instruction import AddInstruction, MulInstruction, \
-    DivCInstruction, Gt0Instruction
+    DivCInstruction, GtCInstruction
 
 
 ADD_INSTRUCTION = b"__add__"
 MUL_INSTRUCTION = b"__mul__"
 DIVC_INSTRUCTION = b"__divC__"
-GT0_INSTRUCTION = b"__gt0__"
+GTC_INSTRUCTION = b"__gtC__"
 FACTORIES = {
     ADD_INSTRUCTION: AddInstruction,
     MUL_INSTRUCTION: MulInstruction,
     DIVC_INSTRUCTION: DivCInstruction,
-    GT0_INSTRUCTION: Gt0Instruction
+    GTC_INSTRUCTION: GtCInstruction
 }
 
 
@@ -33,11 +33,8 @@ def parse_instruction(line):
     parts = ast.literal_eval(line)
     ins = parts[0]
 
-    if ins in { MUL_INSTRUCTION, ADD_INSTRUCTION, DIVC_INSTRUCTION }:
+    if ins in { MUL_INSTRUCTION, ADD_INSTRUCTION, DIVC_INSTRUCTION, GTC_INSTRUCTION }:
         assert len(parts) == 4, "Malformed {} instruction: {}".format(ins, line)
         return FACTORIES[ins](parts[1], parts[2], parts[3])
-    elif ins == GT0_INSTRUCTION:
-        assert len(parts) == 3, "Malformed __gt0__ instruction: {}".format(line)
-        return FACTORIES[ins](parts[1], parts[2])
     else:
         raise ValueError("Unsupported instruction {}, line {}".format(ins, line))
