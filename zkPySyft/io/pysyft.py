@@ -1,4 +1,8 @@
+import ast
 import csv
+
+from zkPySyft.core.instruction import AddInstruction, MulInstruction, \
+    DivCInstruction, Gt0Instruction
 
 
 ADD_INSTRUCTION = b"__add__"
@@ -14,7 +18,7 @@ FACTORIES = {
 
 
 def read_pysyft_inputs(path):
-    with open(path, newline="") as f:
+    with open(path, "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
             yield row
@@ -26,14 +30,14 @@ def read_pysyft_plan(path):
                 yield parse_instruction(line)
 
 def parse_instruction(line):
-    parts = line.split(",")
+    parts = ast.literal_eval(line)
     ins = parts[0]
 
     if ins in { MUL_INSTRUCTION, ADD_INSTRUCTION, DIVC_INSTRUCTION }:
         assert len(parts) == 4, "Malformed {} instruction: {}".format(ins, line)
         return FACTORIES[ins](parts[1], parts[2], parts[3])
     elif ins == GT0_INSTRUCTION:
-        assert len(parts) == 2, "Malformed __gt0__ instruction: {}".format(line)
-        return FACTORIES[ins](parts[1])
+        assert len(parts) == 3, "Malformed __gt0__ instruction: {}".format(line)
+        return FACTORIES[ins](parts[1], parts[2])
     else:
         raise ValueError("Unsupported instruction {}, line {}".format(ins, line))

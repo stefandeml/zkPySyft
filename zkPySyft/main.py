@@ -1,3 +1,6 @@
+import tempfile
+import sys
+
 from zkPySyft.io.pysyft import read_pysyft_inputs, read_pysyft_plan
 from zkPySyft.core.zokrates import ZoKrates
 
@@ -18,15 +21,16 @@ def process_pysyft_input(scenario, path):
         yield row
 
 
-def main():
-    path = "21"
-    instructions = read_pysyft_plan(path)
-    inputs = process_pysyft_input(SCENARIO_3, path)
-    path_out = "3123"
+def main(pysyft_plan_file, pysyft_input_file, scenario):
+    instructions = read_pysyft_plan(pysyft_plan_file)
+    inputs = process_pysyft_input(scenario, pysyft_input_file)
 
     zokrates = ZoKrates(instructions, inputs)
-    zokrates.compile(path_out)
-    zokrates.synthesize()
-    zokrates.setup()
-    zokrates.compute_witness()
-    zokrates.generate_proof()
+    zokrates.run("zokrates.code")
+
+
+if __name__ == "__main__":
+    print(sys.argv)
+    assert len(sys.argv) == 4, \
+        "You must specify a plan file, an input file and a scenario"
+    main(sys.argv[1], sys.argv[2], sys.argv[3])
