@@ -6,14 +6,14 @@ SCENARIO_1 = 0
 SCENARIO_2 = 1
 SCENARIO_3 = 2
 
-# TODO: fix scnearios
-def process_pysyft_input(scneario, path):
+# TODO: fix scenarios
+def process_pysyft_input(scenario, path):
     for row in read_pysyft_inputs(path):
-        if scneario == SCENARIO_1:
+        if scenario == SCENARIO_1:
             pass
-        if scneario == SCENARIO_2:
+        if scenario == SCENARIO_2:
             pass
-        if scneario == SCENARIO_3:
+        if scenario == SCENARIO_3:
             pass
         yield row
 
