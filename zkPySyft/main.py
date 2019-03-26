@@ -20,11 +20,11 @@ def process_pysyft_input(scenario, path):
 
 def main():
     path = "21"
-    statements = read_pysyft_plan(path)
+    instructions = read_pysyft_plan(path)
     inputs = process_pysyft_input(SCENARIO_3, path)
     path_out = "3123"
 
-    zokrates = ZoKrates(statements, inputs)
+    zokrates = ZoKrates(instructions, inputs)
     zokrates.compile(path_out)
     zokrates.synthesize()
     zokrates.setup()
