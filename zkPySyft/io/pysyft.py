@@ -30,8 +30,11 @@ def read_pysyft_plan(path):
                 yield parse_instruction(line)
 
 def parse_instruction(line):
-    parts = ast.literal_eval(line)
-    ins = parts[0]
+    try:
+        parts = ast.literal_eval(line)
+        ins = parts[0]
+    except ValueError:
+        raise ValueError("Malformed instruction: {}".format(line))
 
     if ins in { MUL_INSTRUCTION, ADD_INSTRUCTION, DIVC_INSTRUCTION, GTC_INSTRUCTION }:
         assert len(parts) == 4, "Malformed {} instruction: {}".format(ins, line)
