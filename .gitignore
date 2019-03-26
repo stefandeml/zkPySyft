@@ -2,3 +2,14 @@
 *.swp
 tags
 __pycache__
+
+# ZoKrate output
+out
+out.code
+proof.json
+proving.key
+variables.inf
+verification.key
+witness
+zokrates.code
+
