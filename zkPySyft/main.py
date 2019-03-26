@@ -24,7 +24,7 @@ def main():
     inputs = process_pysyft_input(SCENARIO_3, path)
     path_out = "3123"
 
-    zokrates = ZoKrates(statements, inputs, (0, 1))
+    zokrates = ZoKrates(statements, inputs)
     zokrates.compile(path_out)
     zokrates.synthesize()
     zokrates.setup()
