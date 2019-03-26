@@ -1,8 +1,5 @@
-import re
-from collections import defaultdict, namedtuple
-from itertools import islice
+from collections import namedtuple
 
-from zkPySyft.util import get_re_group1, take
 from zkPySyft.io.pysyft import read_pysyft_plan
 
 

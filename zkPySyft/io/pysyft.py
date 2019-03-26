@@ -1,6 +1,5 @@
 import csv
 from zkPySyft.core.statement import Statement
-from zkPySyft.util import take, get_re_group1
 
 
 def read_pysyft_inputs(path):
