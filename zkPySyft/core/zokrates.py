@@ -1,6 +1,5 @@
 import os
 
-#TODO: add comparison
 MAP_INS_TO_DSL = {
     b"__add__": "+",
     b"__mul__": "*",
