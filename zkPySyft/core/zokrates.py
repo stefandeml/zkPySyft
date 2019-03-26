@@ -1,7 +1,12 @@
 import os
 
 #TODO: add comparison
-MAP_INS_TO_DSL = {"add": "+", "mul": "*"}
+MAP_INS_TO_DSL = {
+    b"__add__": "+",
+    b"__mul__": "*",
+    b"__divC__": "/",
+    b"__gt0__": ""
+}
 
 
 class ZoKrates(object):
@@ -16,7 +21,14 @@ class ZoKrates(object):
         for s in statements:
             res, lhs, rhs, ins = s
             z_ins = MAP_INS_TO_DSL[ins]
-            l = '\tv{} = v{} {} v{}\n'.format(res, lhs, z_ins, rhs)
+
+            if z_ins == b"__divC__":
+                l = "\tv{} = v{} {} {}\n".format(res, lhs, z_ins, rhs)
+            elif z_ins == b"__gt0__":
+                l = "\tv{} = if v{} == 0 then 0 else 1 fi".format(res, lhs)
+            else:
+                l = "\tv{} = v{} {} v{}\n".format(res, lhs, z_ins, rhs)
+
             self.code.append(l)
 
         self.header = 'def main('

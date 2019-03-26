@@ -1,10 +1,10 @@
 from zkPySyft.io.pysyft import read_pysyft_inputs, read_pysyft_plan
 from zkPySyft.core.zokrates import ZoKrates
 
+# TODO: Check if this is the best place for defining the consntants
 SCENARIO_1 = 0
 SCENARIO_2 = 1
 SCENARIO_3 = 2
-
 
 # TODO: fix scnearios
 def process_pysyft_input(scneario, path):
