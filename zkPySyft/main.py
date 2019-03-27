@@ -1,7 +1,6 @@
-import tempfile
 import sys
 
-from zkPySyft.io.pysyft import read_pysyft_inputs, read_pysyft_plan
+from zkPySyft.io.pysyft import read_pysyft_inputs_outputs, read_pysyft_plan
 from zkPySyft.core.zokrates import ZoKrates
 
 # TODO: Check if this is the best place for defining the consntants
@@ -9,9 +8,10 @@ SCENARIO_1 = 0
 SCENARIO_2 = 1
 SCENARIO_3 = 2
 
+
 # TODO: fix scenarios
-def process_pysyft_input(scenario, path):
-    for row in read_pysyft_inputs(path):
+def process_pysyft_inputs_outputs(scenario, path):
+    for row in read_pysyft_inputs_outputs(path):
         if scenario == SCENARIO_1:
             pass
         if scenario == SCENARIO_2:
@@ -23,9 +23,10 @@ def process_pysyft_input(scenario, path):
 
 def main(pysyft_plan_file, pysyft_input_file, scenario):
     instructions = read_pysyft_plan(pysyft_plan_file)
-    inputs = process_pysyft_input(scenario, pysyft_input_file)
+    inputs_and_outputs = process_pysyft_inputs_outputs(scenario,
+                                                       pysyft_input_file)
 
-    zokrates = ZoKrates(instructions, inputs)
+    zokrates = ZoKrates(instructions, inputs_and_outputs)
     zokrates.run("zokrates.code")
 
 

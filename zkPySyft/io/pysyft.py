@@ -17,17 +17,24 @@ FACTORIES = {
 }
 
 
-def read_pysyft_inputs(path):
+def read_pysyft_inputs_outputs(path):
     with open(path, "r") as f:
         reader = csv.DictReader(f)
         for row in reader:
+            # Convert boolean flags from string to integer, to ease boolean
+            # checks later
+            for key in ("is_public", "is_input", "is_output"):
+                if row[key]:
+                    row[key] = int(row[key])
             yield row
+
 
 def read_pysyft_plan(path):
     with open(path, "r") as f:
         for line in f:
             if line:
                 yield parse_instruction(line)
+
 
 def parse_instruction(line):
     try:
@@ -36,7 +43,7 @@ def parse_instruction(line):
     except ValueError:
         raise ValueError("Malformed instruction: {}".format(line))
 
-    if ins in { MUL_INSTRUCTION, ADD_INSTRUCTION, DIVC_INSTRUCTION, GTC_INSTRUCTION }:
+    if ins in {MUL_INSTRUCTION, ADD_INSTRUCTION, DIVC_INSTRUCTION, GTC_INSTRUCTION}:
         assert len(parts) == 4, "Malformed {} instruction: {}".format(ins, line)
         return FACTORIES[ins](parts[1], parts[2], parts[3])
     else:
