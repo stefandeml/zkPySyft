@@ -1,0 +1,3 @@
+[submodule "depends/pycrypto"]
+	path = depends/pycrypto
+	url = /Users/yubi/Documents/Development/zkp/python/zokrates-pycrypto
