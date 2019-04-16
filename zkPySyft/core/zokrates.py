@@ -82,10 +82,9 @@ class ZoKrates:
            for g in self.gadgets:
                args += " ".join(self.gadget_assignments[g])
         cmd = "zokrates compute-witness -a {}".format(args)
-        return cmd
-        # status = os.system(cmd)
-        # if __debug__:
-        #     print(status)
+        status = os.system(cmd)
+        if __debug__:
+            print(status)
 
     def generate_proof(self):
         cmd = "zokrates generate-proof"
