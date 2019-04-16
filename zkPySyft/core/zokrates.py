@@ -6,10 +6,8 @@ class ZoKrates:
         self.code = []
         self.input_assignments = []
         self.outputs = []
-
-        for ins in instructions:
-            # Add indentation and newline to each line in the code block
-            self.code.append("\t{}\n".format(ins.to_zokrates()))
+        self.gadgets = []
+        self.gadget_assignments = {}
 
         self.header = ["def main("]
         # Array for storing the parameters of the main method
@@ -27,8 +25,27 @@ class ZoKrates:
                 self.outputs.append("v{}".format(entry["index"]))
 
         self.header.append(", ".join(parameters))
+
+        # Data-grounding
+        #TODO: fix import using PyPI later
+        from depends.pycrypto.zokrates.gadgets.pedersenHasher import PedersenHasher
+        hasher = PedersenHasher("allInputsHasher")
+        self.gadgets.append(hasher)
+        inputs_hash_digest = hasher.hash_scalars(*(int(i) for i in self.input_assignments))
+        self.gadget_assignments[hasher] = hasher.gen_dsl_witness_scalars(*(int(i) for i in self.input_assignments)) 
+        self.header.append(", field[{}] inputsHashBits".format(hasher.segments*3))
+
         self.header.append(") -> (field): \n\n")
         self.header = "".join(self.header)
+
+        for ins in instructions:
+            # Add indentation and newline to each line in the code block
+            self.code.append("\t{}\n".format(ins.to_zokrates()))
+        
+
+        self.code.append("\tfield[2] inputsHashDigest = {name}(inputsHashBits)\n".format(name=hasher.name))
+        self.code.append("\t{} = inputsHashDigest[0]\n".format(inputs_hash_digest.x))
+        self.code.append("\t{} = inputsHashDigest[1]\n".format(inputs_hash_digest.y))
 
         # Return the outputs
         if self.outputs:
@@ -40,6 +57,8 @@ class ZoKrates:
 
     def compile(self, path):
         self.__write_code_file(path)
+        if self.gadgets:
+            self.__write_gadget_code_files()
         self.path = path
 
     def synthesize(self):
@@ -57,10 +76,14 @@ class ZoKrates:
     def compute_witness(self):
         # TODO: read args from file
         args = " ".join(self.input_assignments)
+        if self.gadgets:
+           for g in self.gadgets:
+               args += " ".join(self.gadget_assignments[g])
         cmd = "zokrates compute-witness -a {}".format(args)
-        status = os.system(cmd)
-        if __debug__:
-            print(status)
+        return cmd
+        # status = os.system(cmd)
+        # if __debug__:
+        #     print(status)
 
     def generate_proof(self):
         cmd = "zokrates generate-proof"
@@ -75,8 +98,19 @@ class ZoKrates:
         self.compute_witness()
         self.generate_proof()
 
+    def __write_gadget_code_files(self):
+        gadgets = self.gadgets
+        for g in gadgets:
+            with open(g.name + ".code", "w+") as f:
+                f.write(g.dsl_code)
+
     def __write_code_file(self, path):
         with open(path, "w+") as f:
+            # add imports to header
+            if self.gadgets: 
+                for g in self.gadgets:
+                    self.header = "import \"{name}.code\" as {name} \n".format(name=g.name) + self.header
+
             f.write(self.header)
             for l in self.code:
                 f.write(l)
