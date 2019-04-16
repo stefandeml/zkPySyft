@@ -29,12 +29,14 @@ class ZoKrates:
         # Data-grounding
         #TODO: fix import using PyPI later
         from depends.pycrypto.zokrates.gadgets.pedersenHasher import PedersenHasher
-        hasher = PedersenHasher("allInputsHasher")
+        hasher = PedersenHasher("inputsHash")
         self.gadgets.append(hasher)
-        inputs_hash_digest = hasher.hash_scalars(*(int(i) for i in self.input_assignments))
-        self.gadget_assignments[hasher] = hasher.gen_dsl_witness_scalars(*(int(i) for i in self.input_assignments)) 
+        int_input_assignments = (int(i) for i in self.input_assignments) 
+        inputs_hash_digest = hasher.hash_scalars(*int_input_assignments)
+        self.gadget_assignments[hasher] = hasher.gen_dsl_witness_scalars(*int_input_assignments)
+        self.gadget_assignments[hasher].extend([str(inputs_hash_digest.x), str(inputs_hash_digest.y)])
         self.header.append(", field[{}] inputsHashBits".format(hasher.segments*3))
-
+        self.header.append(", public field[2] inputsHashDigest")
         self.header.append(") -> (field): \n\n")
         self.header = "".join(self.header)
 
@@ -43,9 +45,9 @@ class ZoKrates:
             self.code.append("\t{}\n".format(ins.to_zokrates()))
         
 
-        self.code.append("\tfield[2] inputsHashDigest = {name}(inputsHashBits)\n".format(name=hasher.name))
-        self.code.append("\t{} = inputsHashDigest[0]\n".format(inputs_hash_digest.x))
-        self.code.append("\t{} = inputsHashDigest[1]\n".format(inputs_hash_digest.y))
+        self.code.append("\tfield[2] inputsHashOutput = {name}(inputsHashBits)\n".format(name=hasher.name))
+        self.code.append("\t inputsHashDigest[0] = inputsHashOutput[0]\n")
+        self.code.append("\t inputsHashDigest[1] = inputsHashOutput[1]\n")
 
         # Return the outputs
         if self.outputs:
