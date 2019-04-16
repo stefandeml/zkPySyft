@@ -16,6 +16,7 @@ class ZoKrates:
         parameters = []
         for entry in inputs_and_outputs:
             if entry["is_input"]:
+                # FIXME: assert that all values in pysyft input file are set
                 self.input_assignments.append(entry["value"])
 
                 if entry["is_public"]:
@@ -33,9 +34,9 @@ class ZoKrates:
         if self.outputs:
             self.code.append("\treturn {}\n".format(",".join(self.outputs)))
         else:
-            # Return 0 if no outputs are specified, as ZoKrates requires a
+            # Return 1 if no outputs are specified, as ZoKrates requires a
             # return statement
-            self.code.append("\treturn 0\n")
+            self.code.append("\treturn 1\n")
 
     def compile(self, path):
         self.__write_code_file(path)
