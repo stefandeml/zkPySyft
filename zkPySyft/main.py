@@ -10,6 +10,7 @@ SCENARIO_3 = 2
 
 
 # TODO: fix scenarios
+# FIXME: without a weight flag in pysyft_inputs_outputs the scenarios dont make sense
 def process_pysyft_inputs_outputs(scenario, path):
     for row in read_pysyft_inputs_outputs(path):
         if scenario == SCENARIO_1:
