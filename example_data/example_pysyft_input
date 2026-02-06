@@ -1,4 +1,4 @@
 index,is_input,is_output,is_public,value
 0,1,0,0,10
 1,1,0,1,5
-5,0,1,,
+5,0,1,,12
